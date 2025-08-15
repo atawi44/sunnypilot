@@ -49,10 +49,9 @@ WifiManager::WifiManager(QObject *parent) : QObject(parent) {
   qDBusRegisterMetaType<Connection>();
   qDBusRegisterMetaType<IpConfig>();
 
-  // Set tethering ssid as "weedle" + first 4 characters of a dongle id
-  tethering_ssid = "weedle";
-  if (auto dongle_id = getDongleId()) {
-    tethering_ssid += "-" + dongle_id->left(4);
+  // Set tethering ssid as "Hyundai Grandeur 2019"
+  tethering_ssid = "Hyundai Grandeur 2019";
+
   }
 
   adapter = getAdapter();
