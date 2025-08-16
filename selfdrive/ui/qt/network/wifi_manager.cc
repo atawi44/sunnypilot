@@ -52,8 +52,6 @@ WifiManager::WifiManager(QObject *parent) : QObject(parent) {
   // Set tethering ssid as "Hyundai Grandeur 2019"
   tethering_ssid = "Hyundai Grandeur 2019";
 
-  }
-
   adapter = getAdapter();
   if (!adapter.isEmpty()) {
     setup();
@@ -151,8 +149,10 @@ QString WifiManager::getIp4Address() {
       arr.beginArray();
       while (!arr.atEnd()) {
         arr >> path;
-        arr.endArray();
-        return path.value("address").value<QString>();
+        if (path.contains("address")) {
+          arr.endArray();
+          return path.value("address").toString();
+        }
       }
       arr.endArray();
     }
@@ -185,7 +185,7 @@ void WifiManager::connect(const Network &n, const bool is_hidden, const QString 
   Connection connection;
   connection["connection"]["type"] = "802-11-wireless";
   connection["connection"]["uuid"] = QUuid::createUuid().toString().remove('{').remove('}');
-  connection["connection"]["id"] = "sunnypilot connection " + QString::fromStdString(n.ssid.toStdString());
+  connection["connection"]["id"] = "sunnypilot connection " + QString::fromUtf8(n.ssid);
   connection["connection"]["autoconnect-retries"] = 0;
 
   connection["802-11-wireless"]["ssid"] = n.ssid;
@@ -511,7 +511,7 @@ void WifiManager::setTetheringEnabled(bool enabled) {
 
 bool WifiManager::isTetheringEnabled() {
   if (!emptyPath(activeAp)) {
-    return get_property(activeAp, "Ssid") == tethering_ssid;
+    return QString::fromUtf8(get_property(activeAp, "Ssid")) == tethering_ssid;
   }
   return false;
 }
